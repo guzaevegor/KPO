@@ -31,7 +31,7 @@ int find_min_in_shaded_area_A(int matrix[MAX_SIZE][MAX_SIZE], int n) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             // Под главной диагональю и под побочной диагональю ИЛИ над главной и над побочной диагональю
-            if ((i > j && i + j > n - 1) || (i < j && i + j < n - 1)) {
+            if  ((i < j && (i + j) < n - 1) || (i > j && (i + j) > n - 1)){
                 if (matrix[i][j] < min) {
                     min = matrix[i][j];
                 }
@@ -45,7 +45,7 @@ int find_min_in_shaded_area_B(int matrix[MAX_SIZE][MAX_SIZE], int n) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             // Под побочной диагональю и над главной диагональю
-            if (i < j && i + j < n - 1) {
+            if ((i < j) && ((i + j) > n - 1)) {
                 if (matrix[i][j] < min) {
                     min = matrix[i][j];
                 }
