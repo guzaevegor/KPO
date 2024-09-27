@@ -73,8 +73,13 @@ int main() {
         }
     }
 
-    // Меняем местами столбцы
-    swap_columns(matrix, M, min_col, max_col);
+    // Проверка и обмен столбцов
+    if (min_col != max_col) {
+        swap_columns(matrix, M, min_col, max_col);
+        printf("Столбцы %d и %d были обменены.\n", min_col, max_col);
+    } else {
+        printf("Минимальный и максимальный элементы находятся в одном столбце (%d). Обмен не требуется.\n", min_col);
+    }
 
     // Вывод измененной матрицы
     printf("Измененная матрица:\n");
