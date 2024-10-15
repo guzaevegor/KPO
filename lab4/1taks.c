@@ -3,33 +3,33 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_WORDS 10
-#define MAX_WORD_LENGTH 5
 #define MAX_INPUT_LENGTH 100
 
 // Функция для генерации случайной строки
 void generate_random_string(char *str, int word_count, int max_word_length) {
     const char charset[] = "abcdefghijklmnopqrstuvwxyz";
+    char *ptr = str;
+    
     for (int i = 0; i < word_count; i++) {
         int word_length = rand() % max_word_length + 1; // длина слова от 1 до max_word_length
         for (int j = 0; j < word_length; j++) {
-            str[i * (max_word_length + 1) + j] = charset[rand() % (sizeof(charset) - 1)];
+            *ptr++ = charset[rand() % (sizeof(charset) - 1)];
         }
-        str[i * (max_word_length + 1) + word_length] = ' '; // добавляем пробел
+        *ptr++ = ' '; // добавляем пробел
     }
-    str[word_count * (max_word_length + 1) - 1] = '\0'; // завершаем строку нулем
+    *(ptr - 1) = '\0'; // заменяем последний пробел на нуль-терминатор
 }
 
 // Функция для нахождения длины самого короткого слова
 int find_shortest_word_length(const char *str) {
-    int shortest_length = 1000; // инициализируем большим значением
+    int shortest_length = MAX_INPUT_LENGTH; // инициализируем максимальным значением
     int current_length = 0;
 
     while (*str) {
         if (*str != ' ') {
             current_length++;
-        } else {
-            if (current_length > 0 && current_length < shortest_length) {
+        } else if (current_length > 0) {
+            if (current_length < shortest_length) {
                 shortest_length = current_length;
             }
             current_length = 0; // сбрасываем длину для следующего слова
@@ -42,7 +42,7 @@ int find_shortest_word_length(const char *str) {
         shortest_length = current_length;
     }
 
-    return shortest_length == 1000 ? 0 : shortest_length; // если не нашли, возвращаем 0
+    return shortest_length == MAX_INPUT_LENGTH ? 0 : shortest_length; // если не нашли, возвращаем 0
 }
 
 int main() {
@@ -59,11 +59,17 @@ int main() {
     getchar(); // очищаем буфер ввода
 
     if (choice == 1) {
-        char random_string[MAX_WORDS * (MAX_WORD_LENGTH + 1)];
-        generate_random_string(random_string, MAX_WORDS, MAX_WORD_LENGTH);
+        int word_count, max_word_length;
+        printf("Введите количество слов и максимальную длину слов: ");
+        scanf("%d %d", &word_count, &max_word_length);
+        getchar(); // очищаем буфер ввода
+        
+        char *random_string = malloc((word_count * (max_word_length + 1)) * sizeof(char));
+        generate_random_string(random_string, word_count, max_word_length);
         printf("Сгенерированная строка: %s\n", random_string);
         int shortest_length = find_shortest_word_length(random_string);
         printf("Длина самого короткого слова: %d\n", shortest_length);
+        free(random_string); // освобождаем память
     } else if (choice == 2) {
         printf("Введите строку: ");
         fgets(input_string, sizeof(input_string), stdin);
