@@ -1,6 +1,7 @@
 /*Дана строка, состоящая из слов, набранных заглавными буквами и
 разделенных пробелами (одним или несколькими). Найти количество
-слов, которые содержат хотя бы одну букву «А».*/#include <stdio.h>
+слов, которые содержат хотя бы одну букву «А».*/
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -28,22 +29,28 @@ void generate_random_string(char *str, int word_count, int max_word_length) {
 int count_words_with_A(const char *str) {
     int count = 0;
     int found_A = 0;
+    int in_word = 0; // Флаг, указывающий, что мы внутри слова
 
     while (*str) {
         if (*str == ' ') {
-            // Если конец слова и в слове была 'А', увеличиваем счетчик
-            if (found_A) {
-                count++;
+            if (in_word) { // Если конец слова и в слове была 'А'
+                if (found_A) {
+                    count++;
+                }
+                found_A = 0;
+                in_word = 0; // Мы больше не внутри слова
             }
-            found_A = 0; // сбрасываем флаг
-        } else if (*str == 'А') {
-            found_A = 1; // нашли 'А' в слове
+        } else {
+            in_word = 1; // Мы внутри слова
+            if (*str == 'A') {
+                found_A = 1; // нашли 'А' в слове
+            }
         }
         str++;
     }
 
     // Проверяем последнее слово
-    if (found_A) {
+    if (in_word && found_A) {
         count++;
     }
 
