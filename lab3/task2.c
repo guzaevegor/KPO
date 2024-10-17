@@ -80,7 +80,7 @@ int main() {
             }
         }
     } else if (choice == 2) {
-        srand(time(NULL));
+       // srand(time(NULL));
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 matrix[i][j] = rand() % 100; // случайные числа от 0 до 99
