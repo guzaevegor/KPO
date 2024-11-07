@@ -1,70 +1,75 @@
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 
 #define MAX_WORDS 100
-#define MAX_WORD_LENGTH 50
+#define MAX_LENGTH 100
 
-// Структура для хранения базы данных перевода
-typedef struct {
-    char english[MAX_WORD_LENGTH];
-    char russian[MAX_WORD_LENGTH];
-} Translation;
-
-Translation dictionary[] = {
-    {"THIS", "ЭТО"},
-    {"IS", ""},         // Пустой перевод
-    {"A", " "},         // Пробел как перевод
-    {"TABLE", "СТОЛ"}
+char english_words[MAX_WORDS][MAX_LENGTH] = {
+    "THIS",
+    "IS",
+    "A",
+    "TABLE",
+    "EXAMPLE",
+    "PROGRAM",
+    "OF",
+    "DOG"
 };
 
-const int dictionary_size = sizeof(dictionary) / sizeof(dictionary[0]);
+char russian_words[MAX_WORDS][MAX_LENGTH] = {
+    "ЭТО",
+    "",
+    "",
+    "СТОЛ",
+    "ПРИМЕР",
+    "ПРОГРАММЫ",
+    "ЭТОЙ",
+    "СОБАКА"
+};
 
-// Функция для поиска перевода слова
-const char* translate_word(const char* word) {
+int dictionary_size = sizeof(english_words) / sizeof(english_words[0]);
+
+const char* translate(const char* word) {
     for (int i = 0; i < dictionary_size; i++) {
-        if (strcmp(word, dictionary[i].english) == 0) {
-            return dictionary[i].russian;
+        if (strcmp(english_words[i], word) == 0) {
+            return russian_words[i];
         }
     }
-    return word; // Если слово не найдено, возвращаем его же
-}
-
-// Функция для разбора строки на слова и перевода
-void translate_sentence(const char* sentence) {
-    char word[MAX_WORD_LENGTH];
-    int word_index = 0;
-    int print_separator = 0; // Флаг для вывода разделителя
-    
-    for (int i = 0; i <= strlen(sentence); i++) {
-        if (sentence[i] == ' ' || sentence[i] == '_' || sentence[i] == '\0') {
-            word[word_index] = '\0'; // завершение слова
-            
-            if (word_index > 0) { // Если слово не пустое
-                if (print_separator) {
-                    printf("_"); // Выводим разделитель перед следующим словом
-                }
-                printf("%s", translate_word(word));
-                print_separator = 1; // Разрешаем выводить разделитель
-            }
-            
-            word_index = 0; // начинаем новое слово
-        } else {
-            word[word_index++] = sentence[i];
-        }
-    }
+    return word; 
 }
 
 int main() {
-    char input[MAX_WORD_LENGTH * MAX_WORDS];
+    setlocale(LC_ALL, "");
 
-    // Ввод предложения на английском языке
+    char input[MAX_LENGTH];
+    char output[MAX_LENGTH * MAX_WORDS] = ""; 
+    char* token;
+    char* context;
+
     printf("Введите предложение на английском языке:\n");
     fgets(input, sizeof(input), stdin);
-    input[strcspn(input, "\n")] = '\0'; // удаляем символ новой строки
+    input[strcspn(input, "\n")] = 0;
 
-    // Вывод перевода
-    printf("Перевод:\n");
-    translate_sentence(input);
+    // Используем strtok_r вместо strtok_s
+    token = strtok_r(input, "_", &context);
 
+    int first_word = 1; // Флаг для первого слова
+
+    while (token != NULL) {
+        const char* translation = translate(token);
+
+        // Добавляем разделитель только между непустыми переводами
+        if (strlen(translation) > 0) {
+            if (!first_word) {
+                strcat(output, "_");
+            }
+            strcat(output, translation);
+            first_word = 0;
+        }
+
+        token = strtok_r(NULL, "_", &context);
+    }
+
+    printf("Перевод:\n%s\n", output);
     return 0;
 }
